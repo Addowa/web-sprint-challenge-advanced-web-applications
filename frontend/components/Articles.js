@@ -19,17 +19,17 @@ export default function Articles({ articles, getArticles, deleteArticle, setCurr
       {
         articles.length === 0
           ? 'No articles yet'
-          : articles.map(art => {
+          : articles.map(a => {
             return (
-              <div className="article" key={art.article_id}>
+              <div className="article" key={a.article_id}>
                 <div>
-                  <h3>{art.title}</h3>
-                  <p>{art.text}</p>
-                  <p>Topic: {art.topic}</p>
+                  <h3>{a.title}</h3>
+                  <p>{a.text}</p>
+                  <p>Topic: {a.topic}</p>
                 </div>
                 <div>
-                  <button onClick={() => setCurrentArticleId(art.article_id)}>Edit</button>
-                  <button onClick={() => deleteArticle(art.article_id)}>Delete</button>
+                  <button onClick={() => setCurrentArticleId(a.article_id)}>Edit</button>
+                  <button onClick={() => deleteArticle(a.article_id)}>Delete</button>
                 </div>
               </div>
             )

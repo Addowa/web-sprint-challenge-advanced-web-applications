@@ -16,6 +16,8 @@ export default function App() {
   const [currentArticleId, setCurrentArticleId] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
 
+  const token = localStorage.getItem('token')
+
   const navigate = useNavigate()
   const redirectToLogin = () => {
      navigate('/') 
@@ -49,10 +51,9 @@ export default function App() {
     setMessage('')
     setSpinnerOn(true)
     try {
-      const token = localStorage.getItem('token')
       const response = await axios.get(articlesUrl, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: token
         }
       })
       setArticles(response.data.articles)
@@ -74,11 +75,11 @@ export default function App() {
     try {
       const response = await axios.post(articlesUrl, article, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: token
         }
       })
       setMessage('Article created successfully!')
-      setArticles((prevArticles) => [...prevArticles, response.data])
+      setArticles((prevArticles) => [...prevArticles, response.data.articles])
     } catch (error) {
         setMessage('Failed to create article. Please try again.')
     } finally {
@@ -92,12 +93,12 @@ export default function App() {
     try {
       const response = await axios.put(`${articlesUrl}/${article_id}`, article, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: token
         }
       })
       setMessage('Article updated successfully!')
       setArticles((prevArticles) =>
-        prevArticles.map((a) => (a.article_id === article_id ? response.data : a))
+        prevArticles.map((a) => (a.article_id === article_id ? response.data.articles : a))
       )
     } catch (error) {
         setMessage('Failed to update article. Please try again.')
@@ -112,7 +113,7 @@ export default function App() {
     try {
       await axios.delete(`${articlesUrl}/${article_id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: token
         }
       })
       setMessage('Article deleted successfully!')
