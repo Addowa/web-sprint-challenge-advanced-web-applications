@@ -37,7 +37,6 @@ export default function App() {
       const response = await axios.post(loginUrl, { username, password })
       localStorage.setItem('token', response.data.token)
       setMessage(response.data.message)
-      await getArticles()
       redirectToArticles()
     } catch (error) {
         setMessage('Login failed. Please check your credentials.')
@@ -56,7 +55,8 @@ export default function App() {
           Authorization: `Bearer ${token}`
         }
       })
-      setArticles(response.data)
+      setArticles(response.data.articles)
+      setMessage(response.data.message)
     } catch (error) {
         if (error.response.status === 401) {
         redirectToLogin()
@@ -97,7 +97,7 @@ export default function App() {
       })
       setMessage('Article updated successfully!')
       setArticles((prevArticles) =>
-        prevArticles.map((a) => (a.id === article_id ? response.data : a))
+        prevArticles.map((a) => (a.article_id === article_id ? response.data : a))
       )
     } catch (error) {
         setMessage('Failed to update article. Please try again.')
@@ -116,7 +116,7 @@ export default function App() {
         }
       })
       setMessage('Article deleted successfully!')
-      setArticles((prevArticles) => prevArticles.filter((a) => a.id !== article_id))
+      setArticles((prevArticles) => prevArticles.filter((a) => a.article_id !== article_id))
     } catch (error) {
         setMessage('Failed to delete article. Please try again.')
     } finally {
@@ -126,7 +126,7 @@ export default function App() {
 
   return (
     <>
-      <Spinner spinnerOn={spinnerOn} />
+      <Spinner on={spinnerOn} />
       <Message message={message} />
       <button id="logout" onClick={logout}>Logout from app</button>
       <div id="wrapper" style={{ opacity: spinnerOn ? "0.25" : "1" }}> {/* <-- do not change this line */}
@@ -139,8 +139,19 @@ export default function App() {
           <Route path="/" element={<LoginForm login={login} />} />
           <Route path="articles" element={
             <>
-              <ArticleForm onSubmit={postArticle} onUpdate={updateArticle} />
-              <Articles articles={articles} onDelete={deleteArticle} getArticles={getArticles} />
+              <ArticleForm 
+                postArticle={postArticle} 
+                updateArticle={updateArticle}
+                setCurrentArticleId={setCurrentArticleId}
+                //currentArticle={currentArticleId} 
+              />
+              <Articles 
+                articles={articles} 
+                deleteArticle={deleteArticle} 
+                getArticles={getArticles}
+                setCurrentArticleId={setCurrentArticleId}
+                currentArticleId={currentArticleId} 
+              />
             </>
           } />
         </Routes>
