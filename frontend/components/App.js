@@ -28,8 +28,8 @@ export default function App() {
 
   const logout = () => {
     localStorage.removeItem('token')
-    setMessage("Goodbye!")
     redirectToLogin()
+    setMessage("Goodbye!")
   }
 
   const login = async ({ username, password }) => {
@@ -78,8 +78,8 @@ export default function App() {
           Authorization: token
         }
       })
-      setMessage('Article created successfully!')
-      setArticles((prevArticles) => [...prevArticles, response.data.articles])
+      setMessage(response.data.message)
+      setArticles((prevArticles) => [...prevArticles, response.data.article])
     } catch (error) {
         setMessage('Failed to create article. Please try again.')
     } finally {
@@ -96,10 +96,11 @@ export default function App() {
           Authorization: token
         }
       })
-      setMessage('Article updated successfully!')
+      setMessage(response.data.message)
       setArticles((prevArticles) =>
-        prevArticles.map((a) => (a.article_id === article_id ? response.data.articles : a))
+        prevArticles.map((a) => (a.article_id === article_id ? response.data.article : a))
       )
+      setCurrentArticleId(null)
     } catch (error) {
         setMessage('Failed to update article. Please try again.')
     } finally {
@@ -111,12 +112,12 @@ export default function App() {
     setMessage('')
     setSpinnerOn(true)
     try {
-      await axios.delete(`${articlesUrl}/${article_id}`, {
+      const response = await axios.delete(`${articlesUrl}/${article_id}`, {
         headers: {
           Authorization: token
         }
       })
-      setMessage('Article deleted successfully!')
+      setMessage(response.data.message)
       setArticles((prevArticles) => prevArticles.filter((a) => a.article_id !== article_id))
     } catch (error) {
         setMessage('Failed to delete article. Please try again.')
@@ -144,14 +145,13 @@ export default function App() {
                 postArticle={postArticle} 
                 updateArticle={updateArticle}
                 setCurrentArticleId={setCurrentArticleId}
-                //currentArticle={currentArticleId} 
+                currentArticle={articles.find(a => a.article_id === currentArticleId)} 
               />
               <Articles 
                 articles={articles} 
                 deleteArticle={deleteArticle} 
                 getArticles={getArticles}
                 setCurrentArticleId={setCurrentArticleId}
-                currentArticleId={currentArticleId} 
               />
             </>
           } />
